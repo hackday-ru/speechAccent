@@ -12,31 +12,15 @@ public class Languages implements Serializable {
 
     public Languages() {}
 
+    public Languages(List<Language> langList) {
+        this.languages = langList;
+    }
+
     public List<Language> getLanguages() {
         return languages;
     }
 
     public void setLanguages(List<Language> languages) {
         this.languages = languages;
-    }
-
-    class Language {
-        public Language() {}
-
-        public Language(String name, List<String> accents) {
-            this.name = name;
-            this.accents = accents;
-        }
-
-        private String name;
-        private List<String> accents;
-
-        public String getName() {
-            return name;
-        }
-
-        public List<String> getAccents() {
-            return accents;
-        }
     }
 }

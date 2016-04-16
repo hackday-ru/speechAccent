@@ -1,5 +1,6 @@
 package hackday.speechAccent.dao;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DaoSupport;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
@@ -13,6 +14,8 @@ import javax.sql.DataSource;
  */
 @Component
 public abstract class AbstractDao extends JdbcDaoSupport {
+
+    protected static final Logger LOGGER = Logger.getLogger("Dao logger");
 
     @Autowired
     private DataSource dataSource;
