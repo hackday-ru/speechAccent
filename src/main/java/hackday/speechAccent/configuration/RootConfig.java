@@ -19,7 +19,7 @@ import java.beans.PropertyVetoException;
                 @ComponentScan.Filter(type = FilterType.ANNOTATION, value = EnableWebMvc.class),
                 @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Controller.class)
         })
-@PropertySource({"classpath:database.properties"})
+@PropertySource({"classpath:database.properties", "classpath:application.properties"})
 public class RootConfig {
 
     @Autowired

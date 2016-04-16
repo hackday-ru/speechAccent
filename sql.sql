@@ -254,7 +254,7 @@ SELECT pg_catalog.setval('language_id_seq', 7, true);
 -- Data for Name: rate; Type: TABLE DATA; Schema: public; Owner: webadmin
 --
 
-COPY rate (id, record_id, rate) FROM stdin;
+COPY rate (id, record_id, current_rate) FROM stdin;
 \.
 
 
