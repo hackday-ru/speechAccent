@@ -27,11 +27,6 @@ public class SpeechController {
     @Autowired
     private Utils utils;
 
-    @RequestMapping(method = RequestMethod.HEAD)
-    public ResponseEntity<Void> getHead() {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/language", method = RequestMethod.GET)
     public
     @ResponseBody

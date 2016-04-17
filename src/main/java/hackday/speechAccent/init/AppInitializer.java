@@ -23,4 +23,6 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
     protected Class<?>[] getServletConfigClasses() {
         return new Class<?>[]{WebConfig.class};
     }
+
+
 }

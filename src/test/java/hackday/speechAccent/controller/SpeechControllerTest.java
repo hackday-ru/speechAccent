@@ -53,12 +53,6 @@ public class SpeechControllerTest {
     @Autowired
     private WebApplicationContext wac;
 
-    @Test
-    public void getHeadTest() throws Exception {
-        mockMvc.perform(request(HttpMethod.HEAD, "/api"))
-                .andExpect(status().isOk());
-    }
-
     /**
      * Not working with annotation @ResponseBody
      *
