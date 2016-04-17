@@ -1,6 +1,7 @@
 package hackday.speechAccent.configuration;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
@@ -27,11 +28,15 @@ public class RootConfig {
 
     @Bean
     public DataSource dataSource() throws PropertyVetoException {
-        ComboPooledDataSource comboPooledDataSource = new ComboPooledDataSource();
-        comboPooledDataSource.setDriverClass(env.getProperty("database.driverName"));
-        comboPooledDataSource.setJdbcUrl(env.getProperty("database.url"));
-        comboPooledDataSource.setUser(env.getProperty("database.usename"));
-        comboPooledDataSource.setPassword(env.getProperty("database.password"));
-        return comboPooledDataSource;
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(env.getProperty("database.url"));
+        config.setDriverClassName(env.getProperty("database.driverName"));
+        config.setUsername(env.getProperty("database.usename"));
+        config.setPassword(env.getProperty("database.password"));
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        return new HikariDataSource(config);
     }
 }
