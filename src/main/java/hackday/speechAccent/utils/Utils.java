@@ -22,19 +22,12 @@ public final class Utils {
     Environment env;
 
     public final String saveFile(MultipartFile file) {
-        String filename = file.getOriginalFilename();
+        String filename = file.getName();
         File outputFile = new File(env.getProperty("file.audio.location") + filename);
-        byte[] buffer = new byte[1024];
-
-        try(FileInputStream reader = (FileInputStream) file.getInputStream();
-            FileOutputStream writer = new FileOutputStream(outputFile)) {
-            if (outputFile.createNewFile()) {
-                while ((reader.read(buffer)) != -1) {
-                    writer.write(buffer);
-                }
-            } else {
-                return null;
-            }
+        try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
+            byte[] fileBytes = file.getBytes();
+            fileOutputStream.write(fileBytes);
+            fileOutputStream.flush();
         } catch (IOException e) {
             LOGGER.error("Error occurences in: ", e);
         }

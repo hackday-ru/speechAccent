@@ -2,7 +2,6 @@ package hackday.speechAccent.dao;
 
 import hackday.speechAccent.model.Language;
 import hackday.speechAccent.model.Languages;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.dao.DataAccessException;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -27,8 +25,10 @@ import java.util.*;
 public class LanguageDao extends AbstractDao {
     private static final String SELECT_ACCENT_WITH_LINK = "SELECT language.iso_name, record.link FROM (SELECT language.id FROM public.language WHERE iso_name = ?) a_id, public.record, public.text, public.language WHERE text.lang_id = a_id.id AND record.text_id = texT.id AND record.accent_id = language.id;";
     private static final String SELECT_ORIGINAL_TEXT = "SELECT DISTINCT language.iso_name original, text.text FROM public.record, public.language, public.text, (SELECT language.iso_name FROM public.language, public.record WHERE record.accent_id = language.id) AS accent WHERE text.lang_id = language.id ORDER BY original;";
-    private static final String INSERT_TEXT = "INSERT INTO public.text (lang_id, text) VALUES (?,?)";
-    private static final String INSERT_RECORD = "INSERT INTO public.record (text_id, accent_id, date, link) VALUES (?,?,now(),?)";
+    private static final String INSERT_TEXT = "INSERT INTO public.text (lang_id, text) VALUES ((SELECT language.id FROM public.language WHERE language.iso_name = ?),?)";
+    private static final String INSERT_RECORD = "INSERT INTO public.record (text_id, accent_id, date, link) VALUES (?,(SELECT language.id FROM public.language WHERE language.iso_name = ?),now(),?)";
+    private static final String INSERT_RATE = "INSERT INTO public.rate (record_id, rate) VALUES ((SELECT record.id FROM public.record WHERE link = ?), ?)";
+
 
     public Languages getLanguagesWithText() {
         List<Triple<String, String, String>> list = getJdbcTemplate().query(SELECT_ORIGINAL_TEXT, new RowMapper<Triple<String, String, String>>() {
@@ -81,5 +81,9 @@ public class LanguageDao extends AbstractDao {
             }
         }, keyHolder);
         return keyHolder.getKey().intValue();
+    }
+
+    public boolean rateRecord(String link, int rate) {
+        return getJdbcTemplate().update(INSERT_RATE, link, rate) > 0;
     }
 }
