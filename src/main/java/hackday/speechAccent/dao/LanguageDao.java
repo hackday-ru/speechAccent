@@ -1,5 +1,6 @@
 package hackday.speechAccent.dao;
 
+import hackday.speechAccent.dto.Rate;
 import hackday.speechAccent.model.Language;
 import hackday.speechAccent.model.Languages;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -28,6 +29,8 @@ public class LanguageDao extends AbstractDao {
     private static final String INSERT_TEXT = "INSERT INTO public.text (lang_id, text) VALUES ((SELECT language.id FROM public.language WHERE language.iso_name = ?),?)";
     private static final String INSERT_RECORD = "INSERT INTO public.record (text_id, accent_id, date, link) VALUES (?,(SELECT language.id FROM public.language WHERE language.iso_name = ?),now(),?)";
     private static final String INSERT_RATE = "INSERT INTO public.rate (record_id, rate) VALUES ((SELECT record.id FROM public.record WHERE link = ?), ?)";
+    private static final String SELECT_DISTINCT_RATE_BY_RECORD_NAME = "SELECT DISTINCT rate FROM public.rate, public.record WHERE rate.record_id = record.id AND record.link = ?";
+    private static final String SELECT_RATE_BY_RECORD_NAME = "SELECT avg(rate) FROM (SELECT rate FROM public.rate, public.record WHERE rate.record_id = record.id AND record.link = ?) AS rates;";
 
 
     public Languages getLanguagesWithText() {
@@ -85,5 +88,21 @@ public class LanguageDao extends AbstractDao {
 
     public boolean rateRecord(String link, int rate) {
         return getJdbcTemplate().update(INSERT_RATE, link, rate) > 0;
+    }
+
+    public Rate getRate(final String recordName) {
+        Rate rate = getJdbcTemplate().queryForObject(SELECT_DISTINCT_RATE_BY_RECORD_NAME, new RowMapper<Rate>() {
+            @Override
+            public Rate mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new Rate(recordName, rs.getInt("rate"), rs.getInt("rate"));
+            }
+        }, recordName);
+        rate.setAverageRate(getJdbcTemplate().queryForObject(SELECT_RATE_BY_RECORD_NAME, new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("avg");
+            }
+        }, recordName));
+        return rate;
     }
 }

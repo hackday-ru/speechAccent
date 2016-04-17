@@ -1,6 +1,7 @@
 package hackday.speechAccent.controller;
 
 import hackday.speechAccent.dao.LanguageDao;
+import hackday.speechAccent.dto.Rate;
 import hackday.speechAccent.model.Languages;
 import hackday.speechAccent.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.annotation.MultipartConfig;
 
-import java.io.IOException;
 /**
  * Created by nicaraguanec on 16.04.2016.
  */
@@ -32,8 +32,7 @@ public class SpeechController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/language",
-            method = RequestMethod.GET)
+    @RequestMapping(value = "/language", method = RequestMethod.GET)
     public
     @ResponseBody
     Languages getLanguages() {
@@ -64,4 +63,12 @@ public class SpeechController {
         }
 
     }
+
+    @RequestMapping(value = "/rate", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Rate getRate(@RequestParam String recordName) {
+        return languageDao.getRate(recordName);
+    }
+
 }
